@@ -1,0 +1,110 @@
+#python3
+# Time:  O(n)
+# Space: O(n)
+#
+# Given a string S, find the longest palindromic substring in S.
+# You may assume that the maximum length of S is 1000,
+#  and there exists one unique longest palindromic substring.
+#
+
+# Manacher's Algorithm
+# http://leetcode.com/2011/11/longest-palindromic-substring-part-ii.html
+class Solution(object):
+    def longestPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        def preProcess(s):
+            if not s:
+                return ['^', '$']
+            T = ['^']
+            for c in s:
+                T +=  ['#', c]
+            T += ['#', '$']
+            return T
+
+        T = preProcess(s)
+        P = [0] * len(T) 
+        center, right = 0, 0
+        for i in xrange(1, len(T) - 1):
+            i_mirror = 2 * center - i
+            if right > i:
+                P[i] = min(right - i, P[i_mirror])
+            else:
+                P[i] = 0
+
+            while T[i + 1 + P[i]] == T[i - 1 - P[i]]:
+                P[i] += 1
+
+            if i + P[i] > right:
+                center, right = i, i + P[i]       
+        
+        max_i = 0
+        for i in xrange(1, len(T) - 1):
+            if P[i] > P[max_i]:
+                max_i = i
+        start = (max_i - 1 - P[max_i]) / 2
+        return s[start : start + P[max_i]]
+
+#c++
+class Solution {
+public:
+	string longestPalindrome(string s) {
+		string T = preString(s);
+		const int n = T.length();
+		
+		//P向量存放以每个位置为中心的最长回文字符串长度
+		vector<int> P(n);
+		int C = 0, R = 0;
+		//R代表目前最长回文的最右字符所在位置
+		//C代表目前最长回文的中心字符所在位置
+
+		for (int i = 1; i < n - 1; ++i)
+		{
+			int i_mirror = 2 * C - i; // equals to i' = C - (i-C)
+
+			P[i] = (R > i) ? min(R - i, P[i_mirror]) : 0;
+
+			// Attempt to expand palindrome centered at i
+			while (T[i + 1 + P[i]] == T[i - 1 - P[i]]) {
+				++P[i];
+			}
+
+			// If palindrome centered at i expands the past R,
+			// adjust center based on expanded palindrome.
+			if (i + P[i] > R) {
+				C = i;
+				R = i + P[i];
+			}
+		}
+
+			// Find the maximum element in P.
+		int max_i = 0;
+		for (int i = 1; i < n - 1; ++i) {
+			if (P[i] > P[max_i]) {
+				max_i = i;
+			}
+		}
+		return s.substr((max_i - P[max_i]) / 2, P[max_i]);
+	}
+
+		
+	//预处理字符串，避免出现偶数和奇数情况的回文
+	string preString(const string& s)
+	{
+		//避免'/0' 结尾
+		if (s.empty()) {
+			return "^$";
+		}
+		string ret = "^";
+		for (int i = 0; i < s.length(); ++i) {
+			ret += "#" + s.substr(i, 1);
+		}
+		ret += "#$";
+		return ret;
+
+	}
+
+};
+
