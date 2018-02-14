@@ -68,7 +68,7 @@ public:
     bool isMatch(string s, string p)
     {
         int m = s.length(),n = p.length();
-        bool dp[m+1][n+1];
+        vector<vector<bool> > dp(m + 1, vector<bool>(n + 1, false));
         dp[0][0] = true;
 //初始化第0行,除了[0][0]全为false，毋庸置疑，因为空串p只能匹配空串，其他都无能匹配
         for (int i = 1; i <= m; i++)
