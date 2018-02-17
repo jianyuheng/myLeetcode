@@ -1,0 +1,120 @@
+#python3
+# Time:  O(n)
+# Space: O(1)
+#
+# Given an integer, convert it to a roman numeral.
+# 
+# Input is guaranteed to be within the range from 1 to 3999.
+#
+
+class Solution(object):
+    def intToRoman(self, num):
+        """
+        :type num: int
+        :rtype: str
+        """
+        numeral_map = {1: "I", 4: "IV", 5: "V", 9: "IX", \
+                       10: "X", 40: "XL", 50: "L", 90: "XC", \
+                       100: "C", 400: "CD", 500: "D", 900: "CM", \
+                       1000: "M"}
+        keyset, result = sorted(numeral_map.keys()), []
+        
+        while num > 0:
+            for key in reversed(keyset):
+                while num / key > 0:
+                    num -= key
+                    result += numeral_map[key]
+                    
+        return "".join(result)
+
+#c++
+例如整数 1437 的罗马数字为 MCDXXXVII， 我们不难发现，千位，百位，十位和个位上的数分别用罗马数字表示了。 
+1000 - M, 400 - CD, 30 - XXX, 7 - VII。所以我们要做的就是用取商法分别提取各个位上的数字，然后分别表示出来：
+
+100 - C
+
+200 - CC
+
+300 - CCC
+
+400 - CD
+
+500 - D
+
+600 - DC
+
+700 - DCC
+
+800 - DCCC
+
+900 - CM
+
+#方法一：
+我们可以分为四类，100到300一类，400一类，500到800一类，900最后一类。每一位上的情况都是类似的，代码如下：
+class Solution {
+public:
+	string intToRoman(int num) {
+		string res = "";
+		char roman[] = { 'M', 'D', 'C', 'L', 'X', 'V', 'I' };
+		int value[] = { 1000, 500, 100, 50, 10, 5, 1 };
+
+		for (int n = 0; n < 7; n += 2) {
+			//获取最高位的数字
+			int x = num / value[n];
+			//100到300一类
+			if (x < 4) {
+				for (int i = 1; i <= x; ++i) 
+					res += roman[n];
+			}
+			//400一类
+			else if (x == 4) 
+				res = res + roman[n] + roman[n - 1];
+			//500到800一类
+			else if (x > 4 && x < 9) 
+			{
+				res += roman[n - 1];
+				for (int i = 6; i <= x; ++i) res += roman[n];
+			}
+			//900一类
+			else if (x == 9) 
+				res = res + roman[n] + roman[n - 2];
+			//去掉最高位数字
+			num %= value[n];
+		}
+		return res;
+	}
+};
+
+#方法二:
+#本题由于限制了输入数字范围这一特殊性，故而还有一种利用贪婪算法的解法，
+建立一个数表，每次通过查表找出当前最大的数，减去再继续查表。参见代码如下：
+class Solution {
+public:
+	string intToRoman(int num) {
+		string res = "";
+		//对900，400，90，40，9，4做特殊处理
+		vector<int> val{ 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+		vector<string> str{ "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+		for (int i = 0; i < val.size(); ++i) {
+			while (num >= val[i]) {
+				num -= val[i];
+				res += str[i];
+			}
+		}
+		return res;
+	}
+};
+
+#方法三：
+下面这种方法个人感觉属于比较投机取巧的方法，把所有的情况都列了出来，然后直接按位查表，O(1)的时间复杂度啊，参见代码如下：
+class Solution {
+public:
+	string intToRoman(int num) {
+		string res = "";
+		vector<string> v1{ "", "M", "MM", "MMM" };
+		vector<string> v2{ "", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM" };
+		vector<string> v3{ "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC" };
+		vector<string> v4{ "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
+		return v1[num / 1000] + v2[(num % 1000) / 100] + v3[(num % 100) / 10] + v4[num % 10];
+	}
+};
