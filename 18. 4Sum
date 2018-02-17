@@ -1,0 +1,42 @@
+#python3
+
+
+#c++
+使用了STL中的set，其特点是不能有重复，如果新加入的数在set中原本就存在的话，插入操作就会失败，这样能很好的避免重复项的存在。
+// O(n^3)
+//随机确定两个数
+class Solution {
+public:
+    vector<vector<int> > fourSum(vector<int> &nums, int target) {
+        set<vector<int> > res;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < int(nums.size() - 3); ++i) {
+            for (int j = i + 1; j < int(nums.size() - 2); ++j) {
+                int left = j + 1, right = nums.size() - 1;
+                while (left < right) {
+                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum == target) {
+                        vector<int> out;
+                        out.push_back(nums[i]);
+                        out.push_back(nums[j]);
+                        out.push_back(nums[left]);
+                        out.push_back(nums[right]);
+                        res.insert(out);
+                        ++left; --right;
+                    } else if (sum < target) ++left;
+                    else --right;
+                }
+            }
+        }
+        return vector<vector<int> > (res.begin(), res.end());
+
+//排除不可能情况
+讨论区rikimberley有个高分的答案，具体思路还是和上面的思路一样的，但是它的运行速度超
+过了100%的人，是因为它在运行的时候，排除了很多不可能的情况。假设我们考虑4个数分
+别为A B C D（有序），最大值MAX。
+1. A太大，退出：（如果4*A > target）
+2. A太小，跳过：（A+4*MAx < target）
+
+3. 确定A后求BCD的3SUM问题
+4. B太大，退出：（如果3*B > target）
+5. B太小，跳过：（B+3*MAx < target） ……
