@@ -26,21 +26,22 @@ public:
 class Solution {
 public:
     vector<int> findSubstring(string s, vector<string>& words) {
+        int n = s.size(), len = words[0].size(), total = words.size(), cnt = total;
         vector<int> res;
-        if (s.empty() || words.empty()) return res;
-        int n = words.size(), m = words[0].size();
-        unordered_map<string, int> m1;
-        for (auto &a : words) ++m1[a];
-        for (int i = 0; i <= (int)s.size() - n * m; ++i) {
-            unordered_map<string, int> m2;
-            int j = 0; 
-            for (j = 0; j < n; ++j) {
-                string t = s.substr(i + j * m, m);
-                if (m1.find(t) == m1.end()) break;
-                ++m2[t];
-                if (m2[t] > m1[t]) break;
+        unordered_map<string, int> counts;
+        for (string s : words) counts[s]++;
+        for (int i = 0; i < len; i++) {
+            unordered_map<string, int> wordcnt = counts;
+            cnt = total;
+            for (int j = i; j + len <= n; j += len) {
+                string cur = s.substr(j, len);
+                if (wordcnt[cur]-- > 0) cnt--;
+                if (j - total*len >= 0) {                  
+                    string out = s.substr(j - total*len, len); // the word out side of current sliding window
+                    if (++wordcnt[out] > 0) cnt++;
+                }
+                if (cnt == 0) res.push_back(j - (total-1)*len);                
             }
-            if (j == n) res.push_back(i);
         }
         return res;
     }
