@@ -1,0 +1,27 @@
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char> > &board) {
+        if (board.empty() || board[0].empty()) return false;
+        int m = board.size(), n = board[0].size();
+        //标记每行是否满足条件
+        vector<vector<bool> > rowFlag(m, vector<bool>(n, false));
+        //标记每列是否满足条件
+        vector<vector<bool> > colFlag(m, vector<bool>(n, false));
+        //标记九宫格是否满足条件
+        vector<vector<bool> > cellFlag(m, vector<bool>(n, false));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                //如果是数字
+                if (board[i][j] >= '1' && board[i][j] <= '9') {
+                    //获得代表该数字的下标
+                    int c = board[i][j] - '1';
+                    if (rowFlag[i][c] || colFlag[c][j] || cellFlag[3 * (i / 3) + j / 3][c]) return false;
+                    rowFlag[i][c] = true;
+                    colFlag[c][j] = true;
+                    cellFlag[3 * (i / 3) + j / 3][c] = true;
+                }
+            }
+        }
+        return true;
+    }
+};
