@@ -1,0 +1,23 @@
+
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int len = s.size();
+        //res[i]存放前i个字符是否可以在表示成字典中的词
+        vector<bool> res(len + 1, false);
+        res[0] = true;
+        
+        for (int i = 0; i < len + 1; ++i) {
+            for (int j = 0; j < i; ++j) {
+                //假设前i-1个字符是否可以表示已知
+                //res[j]表示判断i前面的字符是否包含在字典里
+                //s.substr(j,i-j)表示前j之后的字符是否包含在字典里
+                if (res[j] && find(wordDict.begin(),wordDict.end(),s.substr(j, i-j)) != wordDict.end()) {
+                    res[i] = true;
+                    break;
+                }
+            }
+        }
+        return res[len];
+    }
+};
