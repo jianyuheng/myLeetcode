@@ -2,23 +2,24 @@
 那么当检测到cat是属于dict中的话，这时候剩下的子串, "sanddog" 可能可以组成一个解。
 这时候我们把“cat”加入到一个解字符串(currentStr = "" )中，然后再去递归 "sanddog"这个字符串，
 当递归调用的字符串 s="" （即length == 0）时递归结束，证明这个解是成立的把 currentStr加入到 result中。
+
 class Solution {
 public:
-    vector<string> wordBreak(string s, unordered_set<string>& wordDict) {
+    vector<string> wordBreak(string s, vector<string>&  wordDict) {
         vector<string> res;
         string out;
         vector<bool> possible(s.size() + 1, true);
         wordBreakDFS(s, wordDict, 0, possible, out, res);
         return res;
     }
-    void wordBreakDFS(string &s, unordered_set<string> &wordDict, int start, vector<bool> &possible, string &out, vector<string> &res) {
+    void wordBreakDFS(string &s, vector<string> &wordDict, int start, vector<bool> &possible, string &out, vector<string> &res) {
         if (start == s.size()) {
             res.push_back(out.substr(0, out.size() - 1));
             return;
         }
         for (int i = start; i < s.size(); ++i) {
             string word = s.substr(start, i - start + 1);
-            if (wordDict.find(word) != wordDict.end() && possible[i + 1]) {
+            if (find(wordDict.begin(),wordDict.end(),word) != wordDict.end() && possible[i + 1]) {
                 out.append(word).append(" ");
                 int oldSize = res.size();
                 wordBreakDFS(s, wordDict, i + 1, possible, out, res);
