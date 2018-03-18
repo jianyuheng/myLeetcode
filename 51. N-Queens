@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<vector<string> > solveNQueens(int n) {
+        vector<vector<string> > res;
+        //pos数组代表i行皇后的放置的列
+        vector<int> pos(n, -1);
+        solveNQueensDFS(pos, 0, res);
+        return res;
+    }
+    void solveNQueensDFS(vector<int> &pos, int row, vector<vector<string> > &res) {
+        int n = pos.size();
+        //递归终止条件
+        if (row == n) {
+            vector<string> out(n, string(n, '.'));
+            for (int i = 0; i < n; ++i) {
+                out[i][pos[i]] = 'Q';
+            }
+            res.push_back(out);
+        } else {
+            for (int col = 0; col < n; ++col) {
+            //对于每一列，都判断是否可以放置皇后
+                if (isValid(pos, row ,col)) {
+                    pos[row] = col;
+                    //放置了皇后之后判断下一行可以放置皇后的位置
+                    solveNQueensDFS(pos, row + 1, res);
+                    //退出递归时表示一次放置完成，将pos置为原位，准备第二次放置（列数+1）
+                    pos[row] = -1;
+                }
+            }
+        }
+    }
+    //是否满足条件
+    bool isValid(vector<int> &pos, int row, int col) {
+        for (int i = 0; i < row; ++i) {
+        //如果某列放置了皇后，那么那一列不能再放置，对角线也不能放置
+            if (col == pos[i] || abs(row - i) == abs(col - pos[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
